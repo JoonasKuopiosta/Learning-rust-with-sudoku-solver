@@ -1,3 +1,5 @@
+#[allow(dead_code)]
+
 
 #[derive(Debug)]
 pub struct Tile {
@@ -31,11 +33,11 @@ const THIRD: usize = 3;
 fn main() {
     println!("Hello, world!");
 
-    tests();
+    //tests();
 
-    let data = [0 as u8; NINE*NINE];
 
-    let table = init_table(&data);
+    let table = init_table(&TEST_SUDOKU);
+
 
     print_table(&table)
 
@@ -53,15 +55,45 @@ pub fn init_table(raw_data: &[u8; NINE*NINE]) -> Table {
 
 pub fn print_table(table: &Table) {
 
-    println!("{:#<1$}", "", NINE*3 + 2);
+    println!("{:#<1$}", "", 25);
+    print!("#");
+    // Every 9th changes row
+    let mut n: i16 = 0;
+    // Every third creates empty
+    let mut m: i16 = 0;
+    let mut m_do = false;
     for tile in &table.tiles {
 
         match tile.value {
 
-            255 => print!(" {}", tile.value),
+            255 => print!("  "),
 
-            _ => print!("  "),
+            _ => print!(" {}", tile.value),
         }
+
+        if n >= 8 {
+
+            if m >= 8 {
+                println!(" #\n{:#<1$}", "", 25);
+                break;
+            }
+
+            print!(" #\n#");
+            n = -1;
+            m += 1;
+            m_do = true;
+        }
+
+        if n > 0 && (n + 1) % 3 == 0 {
+            print!(" |");
+        }
+
+        if m_do && (m + 0) % 3 == 0 {
+            print!("{:-<1$}#\n#", "", 23);
+            m_do = false;
+        }
+
+        n += 1;
     }
 }
 
@@ -165,3 +197,17 @@ pub fn tests() {
     let arr = get_group_of(80);
     println!("group id: {:?}", arr);
 }
+
+
+const TEST_SUDOKU: [u8; NINE*NINE] =
+                  [255,   7, 255,    255, 255, 255,    255, 255,   9,
+                     5,   1, 255,      4,   2, 255,      6, 255, 255,
+                   255,   8, 255,      3, 255, 255,      7, 255, 255,
+
+                   255, 255,   8,    255, 255,   1,      3,   7, 255,
+                   255,   2,   3,    255,   8, 255,    255,   4, 255,
+                     4, 255, 255,      9, 255, 255,      1, 255, 255,
+                     
+                     9,   6,   2,      8, 255, 255,    255,   3, 255,
+                   255, 255, 255,    255,   1, 255,      4, 255, 255,
+                     7, 255, 255,      2, 255,   3,    255,   9,   6];
